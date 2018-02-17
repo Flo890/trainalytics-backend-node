@@ -10,6 +10,7 @@ import * as passport from 'passport'
 import * as auth from './routes/auth';
 import * as stravatest from './routes/stravatest'
 import * as api from './routes/api'
+import * as webappinterceptor from './routes/webappinterceptor'
 
 var app = express();
 
@@ -40,6 +41,7 @@ app.use(auth);
 // test's subendpoints are only usable if user is logged in through Strava
 app.use('/test', ensureAuthenticated, stravatest);
 app.use('/api', ensureAuthenticated, api);
+app.use('/webappinterceptor', ensureAuthenticated, webappinterceptor);
 
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If

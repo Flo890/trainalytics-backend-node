@@ -4,6 +4,9 @@ import * as  passport from 'passport'
 import {Strategy as StravaStrategy} from 'passport-strava-oauth2'
 
 import * as config from '../config'
+import {StravaService} from "../service/StravaService";
+
+let stravaService: StravaService = new StravaService();
 
 passport.use(new StravaStrategy({
         clientID: config.STRAVA_CLIENT_ID,
@@ -14,6 +17,11 @@ passport.use(new StravaStrategy({
         // asynchronous verification, for effect...
         process.nextTick(function () {
 
+            stravaService.isAthleteImported(profile.id,(exists: boolean)=>{
+                if(!exists){
+                    stravaService.addAthlete(profile, accessToken);
+                }
+            });
             // To keep the example simple, the user's Strava profile is returned to
             // represent the logged-in user.  In a typical application, you would want
             // to associate the Strava account with a user record in your database,
@@ -36,7 +44,7 @@ router.get('/login',(req,res)=>{
     res.render('login');
 });
 router.get('/auth/strava/login/do',
-    passport.authenticate('strava',{scope: ['public']})
+    passport.authenticate('strava',{scope: ['view_private']})
 );
 
 router.get('/auth/strava/callback',
@@ -45,9 +53,8 @@ router.get('/auth/strava/callback',
         // Successful authentication, redirect home.
         console.log('successful authentication');
         //res.redirect('/test/account');
-        res.redirect('/webapp')
+        res.redirect('/webappinterceptor')
     });
-
 
 
 module.exports = router;
