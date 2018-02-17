@@ -1,11 +1,12 @@
 import * as mongo from 'mongodb'
 import * as monk from 'monk'
+import {Config} from "../Config";
 
 export class DBHandlerMongo {
     private db
 
     constructor(){
-        this.db = monk('localhost:27017/trainalytics_strava')
+        this.db = monk(Config.MONGODB_CONNECT_URL())
     }
 
     public getStravaUser(athleteId: number, successCallback: Function, notFoundCallback: Function) {
@@ -69,10 +70,11 @@ export class DBHandlerMongo {
     }
 
     public insertOrUpdateActivity(athleteId: number, activity: Object, callback: Function): void {
-        let collection = this.db.get('activities');
+        const collection = this.db.get('activities');
         collection.update(
-            {summaryActivity:{id: activity.id}}, // filter
+            {activityId: activity.id}, // filter
             {  // item
+                activityId: activity.id,
                 athleteId: athleteId,
                 importTime: new Date(),
                 summaryActivity: activity
@@ -84,11 +86,14 @@ export class DBHandlerMongo {
                     console.log(`upserted activity ${activity.id} for athlete ${athleteId}`);
                 }
             callback();
+        })
+    }
+
+    public findLatestAthleteActivity(athleteId: number, callback: Function): void {
+        let collection = this.db.get('activities');
+        collection.find({athleteId: athleteId},{sort:{activityId:-1},limit:1}).then(docs => {
+            callback(docs.length > 0 ? docs[0] : null);
         });
-
-
-
-
 
     }
 

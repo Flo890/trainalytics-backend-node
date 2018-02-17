@@ -3,14 +3,14 @@ var router = express.Router();
 import * as  passport from 'passport'
 import {Strategy as StravaStrategy} from 'passport-strava-oauth2'
 
-import * as config from '../config'
 import {StravaService} from "../service/StravaService";
+import {Config} from "../Config";
 
 let stravaService: StravaService = new StravaService();
 
 passport.use(new StravaStrategy({
-        clientID: config.STRAVA_CLIENT_ID,
-        clientSecret: config.STRAVA_CLIENT_SECRET,
+        clientID: Config.STRAVA_CLIENT_ID(),
+        clientSecret: Config.STRAVA_CLIENT_SECRET(),
         callbackURL: "http://127.0.0.1:3000/auth/strava/callback"
     },
     function(accessToken, refreshToken, profile, done) {

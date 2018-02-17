@@ -10,6 +10,7 @@ var passport = require("passport");
 var auth = require("./routes/auth");
 var stravatest = require("./routes/stravatest");
 var api = require("./routes/api");
+var webappinterceptor = require("./routes/webappinterceptor");
 var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +34,7 @@ app.use(auth);
 // test's subendpoints are only usable if user is logged in through Strava
 app.use('/test', ensureAuthenticated, stravatest);
 app.use('/api', ensureAuthenticated, api);
+app.use('/webappinterceptor', ensureAuthenticated, webappinterceptor);
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
 //   the request is authenticated (typically via a persistent login session),
