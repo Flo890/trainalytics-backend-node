@@ -1,0 +1,22 @@
+<html>
+<head>
+    <script>
+        (function(){
+            fetch('/api',
+                {credentials: "same-origin"} // use the cookie of the page's request
+            ).then(function(response) {
+                response.json().then(function(data) {
+                    document.getElementById('output').innerHTML = JSON.stringify(data);
+                });
+            });
+        })();
+    </script>
+
+</head>
+<body>
+    <h1>Welcome!</h1>
+    <div id="output">
+
+    </div>
+</body>
+</html>
