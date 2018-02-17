@@ -1,5 +1,5 @@
 /*
-TODO insert values and rename file to config.js
+TODO insert values and rename to Config.ts
  */
 var config = {
     STRAVA_CLIENT_ID: 'TODO',
