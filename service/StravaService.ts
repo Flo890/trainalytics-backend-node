@@ -77,4 +77,8 @@ export class StravaService {
             });
         }
     }
+
+    public findAthleteActivitiesStats(athleteId: number, afterEpochTs: number, callback: Function): void {
+        this.dbHandlerMongo.findAthleteActivitiesStats(athleteId, afterEpochTs, callback);
+    }
 }

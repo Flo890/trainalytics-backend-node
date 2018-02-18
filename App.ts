@@ -24,7 +24,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
@@ -33,6 +32,12 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 
 // lots of stuff handling the strava authentication
@@ -43,6 +48,9 @@ app.use('/test', ensureAuthenticated, stravatest);
 app.use('/api', ensureAuthenticated, api);
 app.use('/webappinterceptor', ensureAuthenticated, webappinterceptor);
 
+app.use(express.static(path.join(__dirname, 'public/webapp')));
+//app.use('/webapp/profile',express.static(path.join(__dirname, 'public/webapp')));
+
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
 //   the request is authenticated (typically via a persistent login session),
@@ -52,7 +60,6 @@ function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
     res.redirect('/login')
 }
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

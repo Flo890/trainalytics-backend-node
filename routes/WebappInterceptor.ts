@@ -14,7 +14,7 @@ router.get('/',(req,res)=>{
        let after: Date = activitySummary == null ? Utils.substractDaysFromDate(new Date(),90) : Utils.substractDaysFromDate(new Date(activitySummary.summaryActivity.start_date),14);
        console.log(`set after date to ${after.getUTCDate()}`);
 
-       stravaService.importActivitiesFromTo(athleteId, null, after,1,()=>{res.redirect('/webapp')});
+       stravaService.importActivitiesFromTo(athleteId, null, after,1,()=>{res.redirect('/')});
 
     });
 });

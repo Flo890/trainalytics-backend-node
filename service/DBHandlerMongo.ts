@@ -97,5 +97,26 @@ export class DBHandlerMongo {
 
     }
 
+    public findAthleteActivitiesStats(athleteId: number, afterEpochTs: number, callback: Function): void {
+        const fields = {
+            type: 1, // Ride, Run, ...
+            moving_time: 1, // in seconds
+            start_date_local: 1,
+            name: 1,
+            description: 1
+        }
+
+        const collection = this.db.get('activities');
+        collection.find(
+            {athleteId: athleteId, start_date_local:{$gte: afterEpochTs}},
+            {fields: fields, sort:{start_date_local:1}}
+        ).then(docs => {
+            callback(docs);
+        }).catch(reason => {
+            console.error(`could not find activities. reason: ${reason}`);
+            callback(null);
+        })
+    }
+
 
 }
