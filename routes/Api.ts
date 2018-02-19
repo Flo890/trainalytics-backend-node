@@ -11,9 +11,8 @@ router.get('/',(req,res)=>{
 
 router.get('/activitiesstats',(req,res)=>{
     const athleteId: number = req.user.id;
-    const after: number = req.body.afterEpochTs;
 
-    stravaService.findAthleteActivitiesStats(athleteId, after, docs => {
+    stravaService.findAthleteActivitiesStats(athleteId, docs => {
         if(docs) {
             res.json(docs);
         } else {

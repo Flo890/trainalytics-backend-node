@@ -1,12 +1,27 @@
-import * as mongo from 'mongodb'
 import * as monk from 'monk'
 import {Config} from "../Config";
+import {MongoClient as MongoClient} from 'mongodb'
 
 export class DBHandlerMongo {
     private db
+    private dbnative
 
     constructor(){
         this.db = monk(Config.MONGODB_CONNECT_URL())
+
+        // Connection URL for native driver
+        const url = 'mongodb://localhost:27017';
+        // Database Name
+        const dbName = 'trainalytics_strava';
+
+        // Use connect method to connect to the server
+        let thisref = this;
+        MongoClient.connect(url, function(err, client) {
+            console.log("Connected successfully to server");
+            thisref.dbnative = client.db(dbName);
+            //thisref.dbnative = client;
+           // client.close();
+        });
     }
 
     public getStravaUser(athleteId: number, successCallback: Function, notFoundCallback: Function) {
@@ -97,25 +112,25 @@ export class DBHandlerMongo {
 
     }
 
-    public findAthleteActivitiesStats(athleteId: number, afterEpochTs: number, callback: Function): void {
+    public findAthleteActivitiesStats(athleteId: number, callback: Function): void {
         const fields = {
-            type: 1, // Ride, Run, ...
-            moving_time: 1, // in seconds
-            start_date_local: 1,
-            name: 1,
-            description: 1
-        }
+            'summaryActivity.type':1, // Ride, Run, ...
+            'summaryActivity.moving_time':1, // in seconds
+            'summaryActivity.start_date_local':1,
+            'summaryActivity.name':1,
+            'summaryActivity.description':1
+        };
 
-        const collection = this.db.get('activities');
+        const collection = this.dbnative.collection('activities');
+        console.log('after: '+afterEpochTs);
+
         collection.find(
-            {athleteId: athleteId, start_date_local:{$gte: afterEpochTs}},
-            {fields: fields, sort:{start_date_local:1}}
-        ).then(docs => {
+            {athleteId: athleteId},//, summaryActivity:{start_date_local:{$gte: new Date(afterEpochTs)}}
+            {projection: fields}//sort:{'summaryActivity.start_date_local':1},
+             ).sort([['summaryActivity.start_date_local', 1]]).toArray((err,docs) => {
+            console.log(`found docs: ${docs.length}`);
             callback(docs);
-        }).catch(reason => {
-            console.error(`could not find activities. reason: ${reason}`);
-            callback(null);
-        })
+        });
     }
 
 
